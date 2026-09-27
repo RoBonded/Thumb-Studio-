@@ -13,19 +13,38 @@
   --line:#25252d; --line2:#32323c;
   --text:#ececf1; --muted:#8b8b96; --faint:#5a5a64;
   --accent:#ffb224; --accent-hi:#ffc24d; --accent-dim:rgba(255,178,36,.13);
-  --danger:#ff6b5e;
+  --danger:#ff6b5e; --danger-dim:rgba(255,107,94,.12);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
-body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;overflow:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:'Archivo',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;-webkit-font-smoothing:antialiased}
 button{font-family:inherit}
 [hidden]{display:none!important}
 
-/* ============ TOP BAR ============ */
-.topbar{height:52px;flex:none;display:flex;align-items:center;gap:14px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--panel)}
+.ibtn{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;transition:background .13s,color .13s,border-color .13s;flex:none}
+.ibtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ibtn:hover{background:var(--panel2);color:var(--text)}
+.ibtn:disabled{opacity:.3;pointer-events:none}
+.ibtn.on{background:var(--accent-dim);color:var(--accent);border-color:rgba(255,178,36,.3)}
+.ibtn.holding{background:var(--accent-dim);color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:34px;padding:0 16px;border-radius:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);font:600 13px 'Archivo';cursor:pointer;transition:.13s}
+.btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn:hover{border-color:#45454f;background:#23232b}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#161006}
+.btn.primary:hover{background:var(--accent-hi)}
+.btn.danger{color:var(--danger)}
+.btn.danger:hover{border-color:rgba(255,107,94,.4);background:var(--danger-dim)}
+input[type=text]{background:var(--panel2);border:1px solid var(--line2);color:var(--text);padding:8px 10px;border-radius:6px;font:500 13px 'Archivo';transition:border-color .13s}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,12px);background:#22222a;border:1px solid var(--line2);color:var(--text);padding:10px 18px;border-radius:8px;font:500 12.5px 'Archivo';opacity:0;pointer-events:none;transition:.22s;z-index:200;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+.app-shell{height:100%;display:flex;flex-direction:column}
+.topbar{height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--line);background:var(--panel)}
 .brand{display:flex;align-items:center;gap:9px;flex:none}
-.brand .mark{width:22px;height:22px;flex:none}
-.brand .name{font-weight:700;font-size:13.5px;letter-spacing:.3px}
+.brand .mark{width:22px;height:22px}
+.brand .name{font-weight:700;font-size:13.5px}
 .brand .tag{font-weight:800;font-size:8.5px;letter-spacing:1.6px;color:#161006;background:var(--accent);padding:3px 6px;border-radius:4px}
 .docinfo{flex:1;display:flex;align-items:center;justify-content:center;gap:9px;font-size:12px;color:var(--muted);min-width:0}
 .docinfo input{background:transparent;border:1px solid transparent;color:var(--text);font:600 12.5px 'Archivo';padding:5px 10px;border-radius:6px;text-align:center;width:190px}
@@ -36,18 +55,7 @@ button{font-family:inherit}
 .topactions{display:flex;align-items:center;gap:4px;flex:none}
 .tdiv{width:1px;height:20px;background:var(--line);margin:0 6px}
 
-/* ============ ICON BUTTONS ============ */
-.ibtn{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:7px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;transition:background .13s,color .13s,border-color .13s;flex:none}
-.ibtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.ibtn:hover{background:var(--panel2);color:var(--text)}
-.ibtn:disabled{opacity:.3;pointer-events:none}
-.ibtn.on{background:var(--accent-dim);color:var(--accent);border-color:rgba(255,178,36,.3)}
-.ibtn.holding{background:var(--accent-dim);color:var(--accent)}
-
-/* ============ APP LAYOUT ============ */
 .app{flex:1;display:flex;min-height:0}
-
-/* ---- tool rail ---- */
 .rail{width:54px;flex:none;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;align-items:center;padding:10px 0;gap:4px}
 .raildiv{width:22px;height:1px;background:var(--line);margin:6px 0}
 .railbtn{width:38px;height:38px;border-radius:9px}
@@ -57,13 +65,11 @@ button{font-family:inherit}
 [data-tip]::after{content:attr(data-tip);position:absolute;left:calc(100% + 12px);top:50%;background:#000;border:1px solid var(--line2);color:var(--text);font:500 11px 'Archivo';padding:5px 10px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transform:translateY(-50%) translateX(-4px);transition:opacity .12s,transform .12s;z-index:80}
 [data-tip]:hover::after{opacity:1;transform:translateY(-50%) translateX(0)}
 
-/* ---- workspace ---- */
 .workspace{flex:1;min-width:0;overflow:auto;display:flex;padding:36px;background:var(--ws);background-image:radial-gradient(circle,#202028 1px,transparent 1px);background-size:22px 22px}
 .canvasbox{margin:auto}
 .frame{position:relative;background:#000;border-radius:9px;overflow:hidden;box-shadow:0 14px 44px rgba(0,0,0,.55),0 0 0 1px #2b2b34;flex:none}
 .frame canvas{display:block;width:100%;height:100%;touch-action:none}
 
-/* ---- inspector ---- */
 .inspector{width:318px;flex:none;border-left:1px solid var(--line);background:var(--panel);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#38383f transparent}
 .inspector::-webkit-scrollbar{width:7px}
 .inspector::-webkit-scrollbar-thumb{background:#38383f;border-radius:4px}
@@ -74,11 +80,10 @@ button{font-family:inherit}
 .sect.open .sect-h{color:var(--text)}
 .sect-h .chev{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;margin-left:auto;transition:transform .18s;flex:none}
 .sect.open .sect-h .chev{transform:rotate(180deg)}
-.sect-h .cnt{font:600 10px 'Archivo';color:var(--faint);background:var(--panel2);padding:2px 7px;border-radius:9px;letter-spacing:0}
+.sect-h .cnt{font:600 10px 'Archivo';color:var(--faint);background:var(--panel2);padding:2px 7px;border-radius:9px;letter-spacing:0;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sect-b{display:none;padding:2px 14px 16px;flex-direction:column;gap:11px}
 .sect.open .sect-b{display:flex}
 
-/* ---- controls ---- */
 .pr{display:flex;flex-direction:column;gap:6px}
 .pr>label{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:var(--muted);font-weight:500}
 .pr .val{color:var(--text);font-weight:600;font-size:11px;font-variant-numeric:tabular-nums}
@@ -89,17 +94,10 @@ input[type=range]:hover::-webkit-slider-thumb,input[type=range]:active::-webkit-
 input[type=range]::-moz-range-track{height:3px;background:var(--line2);border-radius:2px}
 input[type=range]::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:#d6d6de;border:2px solid var(--panel)}
 input[type=range]:hover::-moz-range-thumb{background:var(--accent)}
-input[type=text]{width:100%;background:var(--panel2);border:1px solid var(--line2);color:var(--text);padding:8px 10px;border-radius:6px;font:500 13px 'Archivo';transition:border-color .13s}
-input[type=text]:focus{outline:none;border-color:var(--accent)}
-input[type=color]{-webkit-appearance:none;appearance:none;width:42px;height:26px;border:1px solid var(--line2);border-radius:6px;background:var(--panel2);cursor:pointer;padding:2px;flex:none}
-input[type=color]::-webkit-color-swatch-wrapper{padding:0}
-input[type=color]::-webkit-color-swatch{border:none;border-radius:3px}
-input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .crow{display:flex;align-items:center;gap:10px}
 .crow label{flex:1;font-size:11.5px;color:var(--muted);font-weight:500}
-.crow label small{display:block;color:var(--faint);font-size:10px;font-weight:400;margin-top:1px}
 .tg{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text);font-weight:500}
 .sw{position:relative;width:34px;height:19px;flex:none;cursor:pointer;display:inline-block}
 .sw input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
@@ -108,19 +106,18 @@ input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 .sw input:checked+i{background:var(--accent)}
 .sw input:checked+i::before{background:#1a1205;transform:translateX(15px)}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:32px;padding:0 14px;border-radius:7px;border:1px solid var(--line2);background:var(--panel2);color:var(--text);font:600 12.5px 'Archivo';cursor:pointer;transition:.13s}
-.btn:hover{border-color:#45454f;background:#23232b}
-.btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#161006}
-.btn.primary:hover{background:var(--accent-hi)}
-.btn.danger{color:var(--danger)}
-.btn.danger:hover{border-color:rgba(255,107,94,.4)}
-.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+input[type=color]{-webkit-appearance:none;appearance:none;width:42px;height:26px;border:1px solid var(--line2);border-radius:6px;background:var(--panel2);cursor:pointer;padding:2px;flex:none}
+input[type=color]::-webkit-color-swatch-wrapper{padding:0}
+input[type=color]::-webkit-color-swatch{border:none;border-radius:3px}
+input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 
+.btnrow{display:grid;grid-template-columns:1fr 1fr;gap:7px}
 .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
 .seg button{height:28px;padding:0 4px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font:600 11.5px 'Archivo';cursor:pointer}
 .seg button:hover{color:var(--text)}
 .seg button.active{border-color:rgba(255,178,36,.45);color:var(--accent);background:var(--accent-dim)}
+.seg button small{display:block;font-size:8.5px;color:var(--faint);font-weight:600;letter-spacing:.4px;margin-top:1px}
+.seg button.active small{color:rgba(255,178,36,.65)}
 
 .fontgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
 .fbtn{height:32px;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--muted);font-size:13.5px;cursor:pointer}
@@ -134,13 +131,12 @@ input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 
 .samples{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .sample{position:relative;aspect-ratio:16/9;border-radius:6px;overflow:hidden;border:1px solid var(--line);padding:0;cursor:pointer;background:#000}
-.sample img{width:100%;height:100%;object-fit:cover;display:block;opacity:.8;transition:opacity .13s}
+.sample img{width:100%;height:100%;object-fit:cover;opacity:.8;transition:opacity .13s}
 .sample:hover{border-color:var(--accent)}
 .sample:hover img{opacity:1}
 
 .subhead{font:600 9.5px 'Archivo';letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin:4px 0 -3px}
 
-/* layer list */
 .llrow{display:flex;align-items:center;gap:8px;height:34px;padding:0 7px;border-radius:7px;border:1px solid transparent;cursor:pointer;font-size:12px;color:var(--text)}
 .llrow:hover{background:var(--panel2)}
 .llrow.on{background:var(--accent-dim);border-color:rgba(255,178,36,.3)}
@@ -162,7 +158,6 @@ input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 .stkgrid button{width:34px;height:34px;padding:0;font-size:18px;line-height:1;border-radius:7px;background:transparent;border:1px solid transparent;cursor:pointer}
 .stkgrid button:hover{border-color:var(--accent);background:var(--panel2)}
 
-/* ---- popovers ---- */
 .pop{position:fixed;z-index:90;background:#1b1b22;border:1px solid var(--line2);border-radius:10px;padding:8px;box-shadow:0 18px 44px rgba(0,0,0,.6);display:none}
 .pop.show{display:grid}
 #shapePop{grid-template-columns:repeat(4,38px);gap:4px}
@@ -171,7 +166,6 @@ input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 #shapePop button:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
 #stkpop{grid-template-columns:repeat(8,34px);gap:3px;max-height:300px;overflow-y:auto;scrollbar-width:thin}
 
-/* ---- status bar ---- */
 .statusbar{height:34px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 12px;border-top:1px solid var(--line);background:var(--panel);font-size:11px;color:var(--muted)}
 .statusbar .hint{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .statusbar kbd{font:600 10px 'Archivo';color:var(--muted);background:var(--panel2);border:1px solid var(--line2);border-radius:4px;padding:1px 5px;margin:0 1px}
@@ -180,16 +174,13 @@ input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 .zoomctl .ibtn svg{width:12px;height:12px}
 #zoomPct{font-size:11px;color:var(--muted);min-width:40px;text-align:center;font-variant-numeric:tabular-nums}
 
-#toast{position:fixed;left:50%;bottom:46px;transform:translate(-50%,12px);background:#22222a;border:1px solid var(--line2);color:var(--text);padding:9px 16px;border-radius:8px;font:500 12px 'Archivo';opacity:0;pointer-events:none;transition:.22s;z-index:100;box-shadow:0 10px 30px rgba(0,0,0,.5)}
-#toast.show{opacity:1;transform:translate(-50%,0)}
-
 @media(max-width:880px){
   body{overflow:auto}
+  .docinfo{display:none}
   .app{flex-direction:column}
   .rail{flex-direction:row;width:100%;height:52px;border-right:none;border-bottom:1px solid var(--line);padding:0 10px;overflow-x:auto}
   .raildiv{width:1px;height:22px;margin:0 6px}
   [data-tip]::after{display:none}
-  .docinfo{display:none}
   .inspector{width:100%;border-left:none;border-top:1px solid var(--line)}
   .workspace{min-height:440px}
 }
@@ -197,237 +188,235 @@ input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
 </head>
 <body>
 
-<!-- ============ TOP BAR ============ -->
-<header class="topbar">
-  <div class="brand">
-    <svg class="mark" viewBox="0 0 24 24" fill="none">
-      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" stroke="#ececf1" stroke-width="1.8"/>
-      <path d="M7.5 15.5l3.4-4.4 2.4 2.9 2-2.4 2.6 3.9z" fill="#ffb224"/>
-    </svg>
-    <span class="name">Thumb Studio</span>
-    <span class="tag">PRO</span>
-  </div>
-  <div class="docinfo">
-    <input id="fname" value="admin-abuse" spellcheck="false" title="Filename">
-    <span class="sep">·</span>
-    <b id="dims">1280 × 720</b>
-    <span class="sep">·</span>
-    <span>PNG</span>
-  </div>
-  <div class="topactions">
-    <button class="ibtn" id="undo" title="Undo · Ctrl+Z"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
-    <button class="ibtn" id="redo" title="Redo · Ctrl+Shift+Z"><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
-    <div class="tdiv"></div>
-    <button class="ibtn" id="gridB" title="Grid overlay"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></button>
-    <button class="ibtn" id="guideB" title="Rule of thirds"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M12 3v18M3 12h18"/></svg></button>
-    <button class="ibtn" id="cmp" title="Hold to see original image"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></button>
-    <div class="tdiv"></div>
-    <button class="ibtn" id="copyB" title="Copy PNG to clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
-    <button class="btn primary" id="dl">
-      <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-5-5m5 5l5-5"/><path d="M4 21h16"/></svg>
-      Export PNG
-    </button>
-  </div>
-</header>
-
-<main class="app">
-
-  <!-- ============ TOOL RAIL ============ -->
-  <nav class="rail">
-    <button class="ibtn railbtn on" data-tool="select" data-tip="Select &amp; move · V"><svg viewBox="0 0 24 24"><path d="M5 3l7 17 2.4-6.6L21 11z"/></svg></button>
-    <button class="ibtn railbtn" data-tool="pen" data-tip="Pen — freehand · P"><svg viewBox="0 0 24 24"><path d="M4 20l4-1L19 8l-3-3L5 16z"/><path d="M14 6l3 3"/></svg></button>
-    <button class="ibtn railbtn" data-tool="hl" data-tip="Highlighter marker · H"><svg viewBox="0 0 24 24"><path d="M9 15l-4 4h5l3-3"/><path d="M10 14L20 4l2 2-10 10-3 1z"/></svg></button>
-    <div class="raildiv"></div>
-    <button class="ibtn railbtn" id="addtext" data-tip="Add text layer"><svg viewBox="0 0 24 24"><path d="M5 6V4h14v2"/><path d="M12 4v16"/><path d="M9 20h6"/></svg></button>
-    <button class="ibtn railbtn" id="addstk" data-tip="Add emoji sticker"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/></svg></button>
-    <button class="ibtn railbtn" id="addimg" data-tip="Add image / logo layer"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5-9 9"/></svg></button>
-    <button class="ibtn railbtn" id="shapeBtn" data-tip="Add shape"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="11" height="11" rx="2"/><circle cx="16" cy="16" r="5.5"/></svg></button>
-  </nav>
-
-  <!-- ============ WORKSPACE ============ -->
-  <section class="workspace" id="cwrap">
-    <div class="canvasbox">
-      <div class="frame" id="frame"><canvas id="cv" width="1280" height="720"></canvas></div>
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" stroke="#ececf1" stroke-width="1.8"/>
+        <path d="M7.5 15.5l3.4-4.4 2.4 2.9 2-2.4 2.6 3.9z" fill="#ffb224"/>
+      </svg>
+      <span class="name">Thumb Studio</span><span class="tag">PRO</span>
     </div>
-  </section>
+    <div class="docinfo">
+      <input id="fname" value="admin-abuse" spellcheck="false" title="Filename">
+      <span class="sep">·</span>
+      <b id="dims">2560 × 1440</b>
+      <span class="sep">·</span>
+      <span>PNG</span>
+    </div>
+    <div class="topactions">
+      <button class="ibtn" id="undo" title="Undo · Ctrl+Z"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+      <button class="ibtn" id="redo" title="Redo · Ctrl+Shift+Z"><svg viewBox="0 0 24 24"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+      <div class="tdiv"></div>
+      <button class="ibtn" id="gridB" title="Grid overlay"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg></button>
+      <button class="ibtn" id="guideB" title="Rule of thirds"><svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"/><path d="M12 3v18M3 12h18"/></svg></button>
+      <button class="ibtn" id="cmp" title="Hold to see original image"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></svg></button>
+      <div class="tdiv"></div>
+      <button class="ibtn" id="copyB" title="Copy PNG to clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+      <button class="btn primary" id="dl">
+        <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0l-5-5m5 5l5-5"/><path d="M4 21h16"/></svg>
+        Export PNG
+      </button>
+    </div>
+  </header>
 
-  <!-- ============ INSPECTOR ============ -->
-  <aside class="inspector">
+  <main class="app">
+    <nav class="rail">
+      <button class="ibtn railbtn on" data-tool="select" data-tip="Select &amp; move · V"><svg viewBox="0 0 24 24"><path d="M5 3l7 17 2.4-6.6L21 11z"/></svg></button>
+      <button class="ibtn railbtn" data-tool="pen" data-tip="Pen — freehand · P"><svg viewBox="0 0 24 24"><path d="M4 20l4-1L19 8l-3-3L5 16z"/><path d="M14 6l3 3"/></svg></button>
+      <button class="ibtn railbtn" data-tool="hl" data-tip="Highlighter marker · H"><svg viewBox="0 0 24 24"><path d="M9 15l-4 4h5l3-3"/><path d="M10 14L20 4l2 2-10 10-3 1z"/></svg></button>
+      <div class="raildiv"></div>
+      <button class="ibtn railbtn" id="addtext" data-tip="Add text layer"><svg viewBox="0 0 24 24"><path d="M5 6V4h14v2"/><path d="M12 4v16"/><path d="M9 20h6"/></svg></button>
+      <button class="ibtn railbtn" id="addstk" data-tip="Add emoji sticker"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/></svg></button>
+      <button class="ibtn railbtn" id="addimg" data-tip="Add image / logo layer"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M21 16l-5-5-9 9"/></svg></button>
+      <button class="ibtn railbtn" id="shapeBtn" data-tip="Add shape"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="11" height="11" rx="2"/><circle cx="16" cy="16" r="5.5"/></svg></button>
+    </nav>
 
-    <section class="sect open">
-      <button class="sect-h">Presets <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="sect-b">
-        <div class="presets">
-          <button class="pbtn" data-p="classic"><span class="dot" style="background:#fff"></span>Classic</button>
-          <button class="pbtn" data-p="beast"><span class="dot" style="background:#ffd21f"></span>Beast</button>
-          <button class="pbtn" data-p="meme"><span class="dot" style="background:#fff"></span>Meme</button>
-          <button class="pbtn" data-p="midnight"><span class="dot" style="background:#bfe0ff"></span>Midnight</button>
-        </div>
+    <section class="workspace" id="cwrap">
+      <div class="canvasbox">
+        <div class="frame" id="frame"><canvas id="cv" width="2560" height="1440"></canvas></div>
       </div>
     </section>
 
-    <section class="sect">
-      <button class="sect-h">Format <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="sect-b">
-        <div class="seg" id="aspseg">
-          <button class="aspbtn active" data-a="16:9">16 : 9</button>
-          <button class="aspbtn" data-a="1:1">1 : 1</button>
-          <button class="aspbtn" data-a="9:16">9 : 16</button>
+    <aside class="inspector">
+      <section class="sect open">
+        <button class="sect-h">Presets <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sect-b">
+          <div class="presets">
+            <button class="pbtn" data-p="classic"><span class="dot" style="background:#fff"></span>Classic</button>
+            <button class="pbtn" data-p="beast"><span class="dot" style="background:#ffd21f"></span>Beast</button>
+            <button class="pbtn" data-p="meme"><span class="dot" style="background:#fff"></span>Meme</button>
+            <button class="pbtn" data-p="midnight"><span class="dot" style="background:#bfe0ff"></span>Midnight</button>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="sect open" id="secLayer">
-      <button class="sect-h">Layer <span class="cnt" id="selName">none</span> <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="sect-b">
-        <div class="empty" id="noSel">
-          <svg viewBox="0 0 24 24"><path d="M5 3l7 17 2.4-6.6L21 11z"/></svg>
-          <b>Nothing selected</b>
-          <span>Click any layer on the canvas,<br>or add one from the left rail.</span>
+      <section class="sect open">
+        <button class="sect-h">Format <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sect-b">
+          <div class="seg" id="aspseg">
+            <button class="aspbtn active" data-a="16:9">16 : 9</button>
+            <button class="aspbtn" data-a="1:1">1 : 1</button>
+            <button class="aspbtn" data-a="9:16">9 : 16</button>
+          </div>
+          <div class="subhead">Render resolution</div>
+          <div class="seg" id="resseg">
+            <button class="resbtn" data-r="1">HD 1×<small>1280</small></button>
+            <button class="resbtn active" data-r="2">Sharp 2×<small>2560</small></button>
+            <button class="resbtn" data-r="3">Ultra 3×<small>3840</small></button>
+          </div>
+          <p style="font-size:10.5px;color:var(--faint);line-height:1.55">2× renders the canvas at double resolution — crisp preview on retina screens and a full-size 2560px export.</p>
         </div>
+      </section>
 
-        <div id="selBody" hidden>
-          <div class="subhead">Geometry</div>
+      <section class="sect open" id="secLayer">
+        <button class="sect-h">Layer <span class="cnt" id="selName">none</span> <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sect-b">
+          <div class="empty" id="noSel">
+            <svg viewBox="0 0 24 24"><path d="M5 3l7 17 2.4-6.6L21 11z"/></svg>
+            <b>Nothing selected</b>
+            <span>Click any layer on the canvas,<br>or add one from the left rail.</span>
+          </div>
+
+          <div id="selBody" hidden>
+            <div class="subhead">Geometry</div>
+            <div class="grid2">
+              <div class="pr"><label>Position X <span class="val" id="lxV"></span></label><input type="range" id="lx" min="0" max="100"></div>
+              <div class="pr"><label>Position Y <span class="val" id="lyV"></span></label><input type="range" id="ly" min="0" max="100"></div>
+            </div>
+            <div class="grid2" id="rSize">
+              <div class="pr"><label>Size <span class="val" id="lsizeV"></span></label><input type="range" id="lsize"></div>
+              <div class="pr"><label>Rotation <span class="val" id="lrotV"></span></label><input type="range" id="lrot" min="-180" max="180" step="0.5"></div>
+            </div>
+            <div class="pr"><label>Opacity <span class="val" id="lalphaV"></span></label><input type="range" id="lalpha" min="10" max="100"></div>
+
+            <div id="gText" hidden>
+              <div class="subhead">Text</div>
+              <div class="pr"><label>Content</label><input type="text" id="ltext" spellcheck="false"></div>
+              <div class="tg"><span>ALL CAPS</span><label class="sw"><input type="checkbox" id="lcaps"><i></i></label></div>
+              <div class="fontgrid" id="lfonts">
+                <button class="fbtn" data-f="Anton" style="font-family:'Anton'">Anton</button>
+                <button class="fbtn" data-f="Archivo Black" style="font-family:'Archivo Black'">Archivo</button>
+                <button class="fbtn" data-f="Bebas Neue" style="font-family:'Bebas Neue'">Bebas</button>
+                <button class="fbtn" data-f="Luckiest Guy" style="font-family:'Luckiest Guy'">Lucky</button>
+                <button class="fbtn" data-f="Oswald" style="font-family:'Oswald';font-weight:600">Oswald</button>
+                <button class="fbtn" data-f="Rubik Mono One" style="font-family:'Rubik Mono One'">Rubik</button>
+                <button class="fbtn" data-f="Pacifico" style="font-family:'Pacifico'">Pacifico</button>
+                <button class="fbtn" data-f="Archivo" style="font-family:'Archivo';font-weight:700">Archivo</button>
+              </div>
+              <div class="pr"><label>Letter spacing <span class="val" id="llsV"></span></label><input type="range" id="lls" min="0" max="24"></div>
+              <div class="crow"><label>Text color</label><input type="color" id="ltcol"></div>
+              <div class="subhead">Effects</div>
+              <div class="pr"><label>RGB split <span class="val" id="lrgbV"></span></label><input type="range" id="lrgb" min="0" max="30"></div>
+              <div class="tg"><span>Outline</span><label class="sw"><input type="checkbox" id="lol"><i></i></label></div>
+              <div class="grid2">
+                <div class="pr"><label>Outline width <span class="val" id="loutwV"></span></label><input type="range" id="loutw" min="2" max="24"></div>
+                <div class="crow"><label>Outline color</label><input type="color" id="loutcol"></div>
+              </div>
+              <div class="tg"><span>Shadow / glow</span><label class="sw"><input type="checkbox" id="lshon"><i></i></label></div>
+              <div class="grid2">
+                <div class="pr"><label>Blur <span class="val" id="lshblurV"></span></label><input type="range" id="lshblur" min="0" max="60"></div>
+                <div class="pr"><label>Offset Y <span class="val" id="lshoyV"></span></label><input type="range" id="lshoy" min="-20" max="30"></div>
+              </div>
+              <div class="grid2">
+                <div class="pr"><label>Shadow opacity <span class="val" id="lshopV"></span></label><input type="range" id="lshop" min="10" max="100"></div>
+                <div class="crow"><label>Shadow color</label><input type="color" id="lshcol"></div>
+              </div>
+              <div class="tg"><span>Backplate bar</span><label class="sw"><input type="checkbox" id="lplon"><i></i></label></div>
+              <div class="grid2">
+                <div class="pr"><label>Plate opacity <span class="val" id="lplopV"></span></label><input type="range" id="lplop" min="10" max="90"></div>
+                <div class="crow"><label>Plate color</label><input type="color" id="lplcol"></div>
+              </div>
+            </div>
+
+            <div id="gShape" hidden>
+              <div class="subhead">Shape</div>
+              <div class="crow"><label>Shape color</label><input type="color" id="lscol"></div>
+              <div class="tg" id="rFill"><span>Filled</span><label class="sw"><input type="checkbox" id="lfill"><i></i></label></div>
+              <div class="pr" id="rLw"><label>Line width <span class="val" id="llwV"></span></label><input type="range" id="llw" min="2" max="24"></div>
+              <div class="pr" id="rRatio"><label>Height ratio <span class="val" id="lratioV"></span></label><input type="range" id="lratio" min="20" max="200"></div>
+              <div class="pr" id="rRgb"><label>RGB split <span class="val" id="lsrgbV"></span></label><input type="range" id="lsrgb" min="0" max="30"></div>
+            </div>
+
+            <div id="gSticker" hidden>
+              <div class="subhead">Swap emoji</div>
+              <div class="stkgrid" id="lstk"></div>
+            </div>
+
+            <div id="gDraw" hidden>
+              <div class="subhead">Stroke</div>
+              <div class="crow"><label>Stroke color</label><input type="color" id="ldcol"></div>
+              <div class="pr"><label>Stroke width <span class="val" id="ldwV"></span></label><input type="range" id="ldw" min="2" max="120"></div>
+            </div>
+
+            <div class="btnrow">
+              <button class="btn" id="ldup">Duplicate</button>
+              <button class="btn danger" id="ldel">Delete</button>
+              <button class="btn" id="lfwd">Forward</button>
+              <button class="btn" id="lbck">Backward</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="sect open">
+        <button class="sect-h">Backdrop <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sect-b">
+          <div class="subhead">Sample images</div>
+          <div class="samples">
+            <button class="sample" data-src="https://picsum.photos/seed/aurora42/2560/1440.jpg"><img src="https://picsum.photos/seed/aurora42/160/90.jpg" alt=""></button>
+            <button class="sample" data-src="https://picsum.photos/seed/metro19/2560/1440.jpg"><img src="https://picsum.photos/seed/metro19/160/90.jpg" alt=""></button>
+            <button class="sample" data-src="https://picsum.photos/seed/canyon7/2560/1440.jpg"><img src="https://picsum.photos/seed/canyon7/160/90.jpg" alt=""></button>
+            <button class="sample" data-src="https://picsum.photos/seed/neon88/2560/1440.jpg"><img src="https://picsum.photos/seed/neon88/160/90.jpg" alt=""></button>
+          </div>
+          <button class="btn" id="rebg" style="width:100%">Upload backdrop…</button>
+          <div class="subhead">Adjustments</div>
+          <div class="pr"><label>Darkness <span class="val" id="idarkV"></span></label><input type="range" id="idark" min="0" max="85"></div>
+          <div class="crow"><label>Dim color</label><input type="color" id="idimc"></div>
+          <div class="pr"><label>RGB split <span class="val" id="irgbV"></span></label><input type="range" id="irgb" min="0" max="30"></div>
           <div class="grid2">
-            <div class="pr"><label>Position X <span class="val" id="lxV"></span></label><input type="range" id="lx" min="0" max="100"></div>
-            <div class="pr"><label>Position Y <span class="val" id="lyV"></span></label><input type="range" id="ly" min="0" max="100"></div>
+            <div class="pr"><label>Blur <span class="val" id="iblurV"></span></label><input type="range" id="iblur" min="0" max="12"></div>
+            <div class="pr"><label>Brightness <span class="val" id="ibriV"></span></label><input type="range" id="ibri" min="50" max="150"></div>
           </div>
-          <div class="grid2" id="rSize">
-            <div class="pr"><label>Size <span class="val" id="lsizeV"></span></label><input type="range" id="lsize"></div>
-            <div class="pr"><label>Rotation <span class="val" id="lrotV"></span></label><input type="range" id="lrot" min="-180" max="180" step="0.5"></div>
+          <div class="grid2">
+            <div class="pr"><label>Saturation <span class="val" id="isatV"></span></label><input type="range" id="isat" min="0" max="200"></div>
+            <div class="pr"><label>Contrast <span class="val" id="iconV"></span></label><input type="range" id="icon" min="50" max="150"></div>
           </div>
-          <div class="pr"><label>Opacity <span class="val" id="lalphaV"></span></label><input type="range" id="lalpha" min="10" max="100"></div>
-
-          <div id="gText" hidden>
-            <div class="subhead">Text</div>
-            <div class="pr"><label>Content</label><input type="text" id="ltext" spellcheck="false"></div>
-            <div class="tg"><span>ALL CAPS</span><label class="sw"><input type="checkbox" id="lcaps"><i></i></label></div>
-            <div class="fontgrid" id="lfonts">
-              <button class="fbtn" data-f="Anton" style="font-family:'Anton'">Anton</button>
-              <button class="fbtn" data-f="Archivo Black" style="font-family:'Archivo Black'">Archivo</button>
-              <button class="fbtn" data-f="Bebas Neue" style="font-family:'Bebas Neue'">Bebas</button>
-              <button class="fbtn" data-f="Luckiest Guy" style="font-family:'Luckiest Guy'">Lucky</button>
-              <button class="fbtn" data-f="Oswald" style="font-family:'Oswald';font-weight:600">Oswald</button>
-              <button class="fbtn" data-f="Rubik Mono One" style="font-family:'Rubik Mono One'">Rubik</button>
-              <button class="fbtn" data-f="Pacifico" style="font-family:'Pacifico'">Pacifico</button>
-              <button class="fbtn" data-f="Archivo" style="font-family:'Archivo';font-weight:700">Archivo</button>
-            </div>
-            <div class="pr"><label>Letter spacing <span class="val" id="llsV"></span></label><input type="range" id="lls" min="0" max="24"></div>
-            <div class="crow"><label>Text color</label><input type="color" id="ltcol"></div>
-
-            <div class="subhead">Effects</div>
-            <div class="pr"><label>RGB split <span class="val" id="lrgbV"></span></label><input type="range" id="lrgb" min="0" max="30"></div>
-            <div class="tg"><span>Outline</span><label class="sw"><input type="checkbox" id="lol"><i></i></label></div>
-            <div class="grid2">
-              <div class="pr"><label>Outline width <span class="val" id="loutwV"></span></label><input type="range" id="loutw" min="2" max="24"></div>
-              <div class="crow"><label>Outline color</label><input type="color" id="loutcol"></div>
-            </div>
-            <div class="tg"><span>Shadow / glow</span><label class="sw"><input type="checkbox" id="lshon"><i></i></label></div>
-            <div class="grid2">
-              <div class="pr"><label>Blur <span class="val" id="lshblurV"></span></label><input type="range" id="lshblur" min="0" max="60"></div>
-              <div class="pr"><label>Offset Y <span class="val" id="lshoyV"></span></label><input type="range" id="lshoy" min="-20" max="30"></div>
-            </div>
-            <div class="grid2">
-              <div class="pr"><label>Shadow opacity <span class="val" id="lshopV"></span></label><input type="range" id="lshop" min="10" max="100"></div>
-              <div class="crow"><label>Shadow color</label><input type="color" id="lshcol"></div>
-            </div>
-            <div class="tg"><span>Backplate bar</span><label class="sw"><input type="checkbox" id="lplon"><i></i></label></div>
-            <div class="grid2">
-              <div class="pr"><label>Plate opacity <span class="val" id="lplopV"></span></label><input type="range" id="lplop" min="10" max="90"></div>
-              <div class="crow"><label>Plate color</label><input type="color" id="lplcol"></div>
-            </div>
+          <div class="grid2">
+            <div class="pr"><label>Vignette <span class="val" id="ivigV"></span></label><input type="range" id="ivig" min="0" max="100"></div>
+            <div class="pr"><label>Grain <span class="val" id="igrainV"></span></label><input type="range" id="igrain" min="0" max="60"></div>
           </div>
-
-          <div id="gShape" hidden>
-            <div class="subhead">Shape</div>
-            <div class="crow"><label>Shape color</label><input type="color" id="lscol"></div>
-            <div class="tg" id="rFill"><span>Filled</span><label class="sw"><input type="checkbox" id="lfill"><i></i></label></div>
-            <div class="pr" id="rLw"><label>Line width <span class="val" id="llwV"></span></label><input type="range" id="llw" min="2" max="24"></div>
-            <div class="pr" id="rRatio"><label>Height ratio <span class="val" id="lratioV"></span></label><input type="range" id="lratio" min="20" max="200"></div>
-            <div class="pr" id="rRgb"><label>RGB split <span class="val" id="lsrgbV"></span></label><input type="range" id="lsrgb" min="0" max="30"></div>
-          </div>
-
-          <div id="gSticker" hidden>
-            <div class="subhead">Swap emoji</div>
-            <div class="stkgrid" id="lstk"></div>
-          </div>
-
-          <div id="gDraw" hidden>
-            <div class="subhead">Stroke</div>
-            <div class="crow"><label>Stroke color</label><input type="color" id="ldcol"></div>
-            <div class="pr"><label>Stroke width <span class="val" id="ldwV"></span></label><input type="range" id="ldw" min="2" max="120"></div>
-          </div>
-
-          <div class="btnrow">
-            <button class="btn" id="ldup">Duplicate</button>
-            <button class="btn danger" id="ldel">Delete</button>
-            <button class="btn" id="lfwd">Forward</button>
-            <button class="btn" id="lbck">Backward</button>
-          </div>
+          <div class="tg"><span>Mirror image</span><label class="sw"><input type="checkbox" id="iflip"><i></i></label></div>
         </div>
+      </section>
+
+      <section class="sect open">
+        <button class="sect-h">Layers <span class="cnt" id="lcount">0</span> <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="sect-b" id="llist"></div>
+      </section>
+
+      <div style="padding:14px">
+        <button class="btn" id="reset" style="width:100%">Reset everything</button>
+        <p style="font-size:10.5px;color:var(--faint);line-height:1.6;margin-top:12px">
+          Everything renders on a hidden scene canvas — the exported PNG is pixel-identical to the preview, with no selection boxes or guides.
+        </p>
       </div>
-    </section>
+    </aside>
+  </main>
 
-    <section class="sect open">
-      <button class="sect-h">Backdrop <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="sect-b">
-        <div class="subhead">Sample images</div>
-        <div class="samples">
-          <button class="sample" data-src="https://picsum.photos/seed/aurora42/1280/720.jpg"><img src="https://picsum.photos/seed/aurora42/160/90.jpg" alt=""></button>
-          <button class="sample" data-src="https://picsum.photos/seed/metro19/1280/720.jpg"><img src="https://picsum.photos/seed/metro19/160/90.jpg" alt=""></button>
-          <button class="sample" data-src="https://picsum.photos/seed/canyon7/1280/720.jpg"><img src="https://picsum.photos/seed/canyon7/160/90.jpg" alt=""></button>
-          <button class="sample" data-src="https://picsum.photos/seed/neon88/1280/720.jpg"><img src="https://picsum.photos/seed/neon88/160/90.jpg" alt=""></button>
-        </div>
-        <button class="btn" id="rebg" style="width:100%">Upload backdrop…</button>
-
-        <div class="subhead">Adjustments</div>
-        <div class="pr"><label>Darkness <span class="val" id="idarkV"></span></label><input type="range" id="idark" min="0" max="85"></div>
-        <div class="crow"><label>Dim color</label><input type="color" id="idimc"></div>
-        <div class="pr"><label>RGB split <span class="val" id="irgbV"></span></label><input type="range" id="irgb" min="0" max="30"></div>
-        <div class="grid2">
-          <div class="pr"><label>Blur <span class="val" id="iblurV"></span></label><input type="range" id="iblur" min="0" max="12"></div>
-          <div class="pr"><label>Brightness <span class="val" id="ibriV"></span></label><input type="range" id="ibri" min="50" max="150"></div>
-        </div>
-        <div class="grid2">
-          <div class="pr"><label>Saturation <span class="val" id="isatV"></span></label><input type="range" id="isat" min="0" max="200"></div>
-          <div class="pr"><label>Contrast <span class="val" id="iconV"></span></label><input type="range" id="icon" min="50" max="150"></div>
-        </div>
-        <div class="grid2">
-          <div class="pr"><label>Vignette <span class="val" id="ivigV"></span></label><input type="range" id="ivig" min="0" max="100"></div>
-          <div class="pr"><label>Grain <span class="val" id="igrainV"></span></label><input type="range" id="igrain" min="0" max="60"></div>
-        </div>
-        <div class="tg"><span>Mirror image</span><label class="sw"><input type="checkbox" id="iflip"><i></i></label></div>
-      </div>
-    </section>
-
-    <section class="sect open">
-      <button class="sect-h">Layers <span class="cnt" id="lcount">0</span> <svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
-      <div class="sect-b" id="llist"></div>
-    </section>
-
-    <div style="padding:14px">
-      <button class="btn" id="reset" style="width:100%">Reset everything</button>
-      <p style="font-size:10.5px;color:var(--faint);line-height:1.6;margin-top:12px">
-        The scene renders on a hidden canvas — exports are pixel-identical to the preview, without selection boxes or guides.
-      </p>
-    </div>
-
-  </aside>
-</main>
-
-<!-- ============ STATUS BAR ============ -->
-<footer class="statusbar">
-  <span class="hint" id="toolHint"></span>
-  <span class="hint" style="flex:none">
-    <kbd>V</kbd><kbd>P</kbd><kbd>H</kbd> tools · <kbd>⌫</kbd> delete · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · wheel = scale · <kbd>Shift</kbd>+wheel = rotate
-  </span>
-  <span class="zoomctl">
-    <button class="ibtn" id="zoomOut" title="Zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
-    <span id="zoomPct">100%</span>
-    <button class="ibtn" id="zoomIn" title="Zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
-    <button class="ibtn" id="zoomFit" title="Zoom to fit"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
-  </span>
-</footer>
+  <footer class="statusbar">
+    <span class="hint" id="toolHint"></span>
+    <span class="hint" style="flex:none">
+      <kbd>V</kbd><kbd>P</kbd><kbd>H</kbd> tools · <kbd>⌫</kbd> delete · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · wheel = scale · <kbd>Shift</kbd>+wheel = rotate
+    </span>
+    <span class="zoomctl">
+      <button class="ibtn" id="zoomOut" title="Zoom out"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+      <span id="zoomPct">100%</span>
+      <button class="ibtn" id="zoomIn" title="Zoom in"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="ibtn" id="zoomFit" title="Zoom to fit"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
+    </span>
+  </footer>
+</div>
 
 <div class="pop" id="shapePop">
   <button data-shape="arrow" title="Arrow"><svg viewBox="0 0 24 24"><path d="M3 12h16m0 0l-6-6m6 6l-6 6"/></svg></button>
@@ -440,7 +429,6 @@ input[type=color]::-moz-color-swatch{border:none;border-radius:3px}
   <button data-shape="spark" title="Sparkle"><svg viewBox="0 0 24 24"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/></svg></button>
 </div>
 <div class="pop" id="stkpop"></div>
-
 <div id="toast"></div>
 <input type="file" id="fileL" accept="image/*" hidden>
 <input type="file" id="fileB" accept="image/*" hidden>
@@ -450,7 +438,7 @@ const $ = id => document.getElementById(id);
 const cv = $('cv'), ctx = cv.getContext('2d'), frame = $('frame');
 const PI = Math.PI, PI2 = PI*2;
 const EMO = "'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
-const DEFAULT_IMG = 'https://picsum.photos/seed/aurora42/1280/720.jpg';
+const DEFAULT_IMG = 'https://picsum.photos/seed/aurora42/2560/1440.jpg';
 const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
 
 /* ---------- offscreen canvases ---------- */
@@ -474,22 +462,19 @@ const S = {
 };
 const DEFAULT_IMG_S = JSON.parse(JSON.stringify(S.img));
 
-let uid = 1, aid = 1;
+let uid = 1;
 const nid = () => 'L'+(uid++);
 const assets = {};
 
-function defaultLayers(){
-  return [{
-    id:nid(), type:'text', text:'ADMIN ABUSE 🤫', x:.5, y:.5, size:130, font:'Anton',
-    color:'#ffffff', rot:0, alpha:1, ls:4, caps:false,
-    out:{ on:true, w:9, color:'#000000' },
-    sh:{ on:true, blur:18, oy:6, op:.65, color:'#000000' },
-    plate:{ on:false, color:'#000000', op:.45 },
-    rgb:0, hide:false
-  }];
-}
-let layers = defaultLayers();
-let sel = null;
+let layers = [{
+  id:nid(), type:'text', text:'ADMIN ABUSE 🤫', x:.5, y:.5, size:130, font:'Anton',
+  color:'#ffffff', rot:0, alpha:1, ls:4, caps:false,
+  out:{ on:true, w:9, color:'#000000' },
+  sh:{ on:true, blur:18, oy:6, op:.65, color:'#000000' },
+  plate:{ on:false, color:'#000000', op:.45 },
+  rgb:0, hide:false
+}];
+let sel = layers[0];
 let tool = 'select';
 
 const PRESETS = {
@@ -513,31 +498,47 @@ function deepMerge(dst, src){
   }
 }
 
-/* ---------- backdrop image ---------- */
+/* ---------- backdrop ---------- */
 let img = null, fallbackUsed = false;
 function loadImage(src){
   const im = new Image();
   im.crossOrigin = 'anonymous';
-  im.onload = () => { img = im; render(); if (!hist.length) pushHistory(); };
+  im.onload = () => { img = im; fallbackUsed=false; render(); if (!hist.length) pushHistory(); };
   im.onerror = () => { if(!fallbackUsed){ fallbackUsed=true; img=makeFallback(); render(); } };
   im.src = src;
 }
 function makeFallback(){
-  const W=1280,H=720,c=document.createElement('canvas'); c.width=W;c.height=H;
+  const W=2560,H=1440,c=document.createElement('canvas'); c.width=W;c.height=H;
   const g=c.getContext('2d');
   g.fillStyle='#1a1a2e'; g.fillRect(0,0,W,H);
   const hues=['#e74c3c','#e67e22','#f1c40f','#2ecc71','#3498db','#9b59b6'];
-  hues.forEach((h,i)=>{ g.beginPath(); g.strokeStyle=h; g.globalAlpha=.35; g.lineWidth=90;
+  hues.forEach((h,i)=>{ g.beginPath(); g.strokeStyle=h; g.globalAlpha=.35; g.lineWidth=180;
     g.arc(W/2,H*1.25,Math.min(W,H)*.86-i*Math.min(W,H)*.13,PI,PI2); g.stroke(); });
   g.globalAlpha=1;
   for(let i=0;i<60;i++){
-    const x=Math.random()*W,y=Math.random()*H,s=26+Math.random()*40;
+    const x=Math.random()*W,y=Math.random()*H,s=52+Math.random()*80;
     g.globalAlpha=.5; g.fillStyle=hues[i%hues.length]; g.fillRect(x,y,s,s);
     g.globalAlpha=.9; g.fillStyle='#fff'; g.font=`bold ${s*.55}px 'Archivo'`;
     g.textAlign='center'; g.textBaseline='middle';
     g.fillText(String.fromCharCode(65+(i%26)),x+s/2,y+s/2);
   }
   g.globalAlpha=1; return c;
+}
+function makeUploadable(file, cb, maxSide, quality){
+  const r = new FileReader();
+  r.onload = ()=>{
+    const im = new Image();
+    im.onload = ()=>{
+      if (Math.max(im.width,im.height) <= maxSide) return cb(r.result, im);
+      const s = maxSide/Math.max(im.width,im.height);
+      const c = document.createElement('canvas');
+      c.width = Math.round(im.width*s); c.height = Math.round(im.height*s);
+      c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+      cb(c.toDataURL('image/jpeg', quality), im);
+    };
+    im.src = r.result;
+  };
+  r.readAsDataURL(file);
 }
 loadImage(DEFAULT_IMG);
 
@@ -581,7 +582,7 @@ function drawTextL(l,g,W,H,sc){
   let eff=l.size*sc;
   setFontOn(g,l.font,eff,l.ls*sc);
   let w=g.measureText(text).width;
-  if (w>W-80 && w>0){ eff=Math.max(10,eff*(W-80)/w); setFontOn(g,l.font,eff,l.ls*sc); w=g.measureText(text).width; }
+  if (w>W-80*sc && w>0){ eff=Math.max(10,eff*(W-80*sc)/w); setFontOn(g,l.font,eff,l.ls*sc); w=g.measureText(text).width; }
   const h=eff*1.12;
   if (l.plate.on){
     const p=eff*.28;
@@ -709,6 +710,8 @@ function drawLayer(l,g,W,H,sc){
 function render(){
   const W=cv.width, H=cv.height, sc=W/1280;
   sctx.setTransform(1,0,0,1,0,0);
+  sctx.imageSmoothingEnabled = true;
+  sctx.imageSmoothingQuality = 'high';
   sctx.clearRect(0,0,W,H);
   sctx.fillStyle='#000'; sctx.fillRect(0,0,W,H);
   if (img){
@@ -717,6 +720,8 @@ function render(){
     } else {
       bctx.setTransform(1,0,0,1,0,0);
       bctx.clearRect(0,0,W,H);
+      bctx.imageSmoothingEnabled = true;
+      bctx.imageSmoothingQuality = 'high';
       bctx.save();
       bctx.filter=`blur(${S.img.blur}px) saturate(${S.img.sat}%) contrast(${S.img.con}%) brightness(${S.img.bri}%)`;
       let s=Math.max(W/img.width,H/img.height);
@@ -746,6 +751,8 @@ function render(){
     }
   }
   ctx.setTransform(1,0,0,1,0,0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   ctx.clearRect(0,0,W,H);
   ctx.drawImage(scene,0,0);
   if (S.compare) tagOriginal(ctx,W);
@@ -754,11 +761,11 @@ function render(){
 
 function tagOriginal(g,W){
   g.save(); if('letterSpacing' in g) g.letterSpacing='0px';
-  g.font="600 15px 'Archivo',sans-serif";
+  g.font=`600 ${W/85}px 'Archivo',sans-serif`;
   const t='ORIGINAL', w=g.measureText(t).width;
-  g.fillStyle='rgba(0,0,0,.6)'; rrectOn(g,16,16,w+22,30,6); g.fill();
+  g.fillStyle='rgba(0,0,0,.6)'; rrectOn(g,W/80,W/80,w+W/58,W/42,6); g.fill();
   g.fillStyle='#fff'; g.textAlign='center'; g.textBaseline='middle';
-  g.fillText(t,27+w/2,31); g.restore();
+  g.fillText(t,W/80+w/2+W/116,W/80+W/84*1.1); g.restore();
 }
 
 function overlays(g,W,H){
@@ -780,7 +787,7 @@ function overlays(g,W,H){
     g.save(); g.translate(l._cx,l._cy); g.rotate((l._rot||0)*PI/180);
     g.strokeStyle='#ffb224'; g.lineWidth=2*k; g.setLineDash([10*k,7*k]);
     g.strokeRect(-l._bw/2,-l._bh/2,l._bw,l._bh);
-    g.setLineDash([]); g.fillStyle='#ffb224';
+    g.setLineDash([]);
     const hs=11*k;
     [[1,1],[1,-1],[-1,-1],[-1,1]].forEach(([sx,sy])=>{
       g.fillStyle='#111'; g.fillRect(sx*l._bw/2-hs/2-1.5*k,sy*l._bh/2-hs/2-1.5*k,hs+3*k,hs+3*k);
@@ -943,7 +950,7 @@ function addStickerLayer(e2){
 }
 function addImgLayer(id){
   const a=assets[id];
-  const l={ id:nid(), type:'img', assetId:id, x:.5, y:.5, w:clamp(a.width/1280*.6,.05,.9), rot:0, alpha:1, hide:false };
+  const l={ id:nid(), type:'img', assetId:id, x:.5, y:.5, w:clamp(a.width/2560,.05,.9), rot:0, alpha:1, hide:false };
   layers.push(l); sel=l; setTool('select');
   pushHistory(); syncLayerPanel(); syncLayersPanel(); render();
   toast('Image layer added');
@@ -962,7 +969,7 @@ function setTool(t){
 }
 document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
 
-const STICKERS=['🤫','😱','💀','🔥','😭','😎','🥵','😡','👀','🤡','🧢','🍌','⚡','⭐','❌','✅','⚠️','💯','🎬','🎮','👑','💩','🚫','💯','😭','🔥','💀','👀','😱','🤫','⚡','⭐','❌','✅','⚠️','👑','🎮','🎬','🤡','🥵','😡','🧢','🍌','💩','🚫','😎','😭'];
+const STICKERS=['🤫','😱','💀','🔥','😭','😎','🥵','😡','👀','🤡','🧢','🍌','⚡','⭐','❌','✅','⚠️','💯','🎬','🎮','👑','💩','🚫','😭','🔥','💀','👀','😱','🤫','⚡','⭐','❌','✅','⚠️','👑','🎮','🎬','🤡','🥵','😡','🧢','🍌','💩','🚫','😎','😭','🤫'];
 const stkpop=$('stkpop'), shapePop=$('shapePop');
 STICKERS.forEach(e2=>{
   const b=document.createElement('button'); b.textContent=e2;
@@ -972,8 +979,9 @@ STICKERS.forEach(e2=>{
 function placePop(pop,btn){
   const r=btn.getBoundingClientRect();
   pop.classList.add('show');
-  pop.style.left=(r.right+10)+'px';
-  pop.style.top=clamp(r.top,8,innerHeight-pop.offsetHeight-10)+'px';
+  const w = pop.offsetWidth||280, h = pop.offsetHeight||120;
+  pop.style.left = clamp(r.right+10, 8, innerWidth-w-10)+'px';
+  pop.style.top  = clamp(r.top, 8, innerHeight-h-10)+'px';
 }
 function closePops(){ stkpop.classList.remove('show'); shapePop.classList.remove('show'); }
  $('addstk').addEventListener('click',e=>{ e.stopPropagation(); stkpop.classList.contains('show')?closePops():placePop(stkpop,e.currentTarget); });
@@ -981,20 +989,23 @@ function closePops(){ stkpop.classList.remove('show'); shapePop.classList.remove
 document.addEventListener('pointerdown',e=>{
   if (!e.target.closest('.pop') && !e.target.closest('#addstk') && !e.target.closest('#shapeBtn')) closePops();
 });
-
 shapePop.querySelectorAll('[data-shape]').forEach(b=>b.addEventListener('click',()=>{ addShapeLayer(b.dataset.shape); closePops(); }));
+
  $('addtext').addEventListener('click',addTextLayer);
  $('addimg').addEventListener('click',()=>$('fileL').click());
  $('fileL').addEventListener('change',e=>{
   const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader();
-  r.onload=()=>{ const im=new Image(); im.onload=()=>{ const id='A'+(aid++); assets[id]=im; addImgLayer(id); }; im.src=r.result; };
-  r.readAsDataURL(f); e.target.value='';
+  makeUploadable(f,(dataUrl,im)=>{
+    const id='A'+(uid++); assets[id]=im;
+    addImgLayer(id);
+  }, 2000, .85);
+  e.target.value='';
 });
  $('rebg').addEventListener('click',()=>$('fileB').click());
  $('fileB').addEventListener('change',e=>{
   const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>loadImage(r.result); r.readAsDataURL(f); e.target.value='';
+  makeUploadable(f,(dataUrl)=>loadImage(dataUrl), 2200, .82);
+  e.target.value='';
 });
 document.querySelectorAll('.sample').forEach(b=>b.addEventListener('click',()=>loadImage(b.dataset.src)));
 
@@ -1219,8 +1230,9 @@ document.querySelectorAll('.pbtn[data-p]').forEach(b=>{
   });
 });
 
-/* ---------- aspect & zoom ---------- */
+/* ---------- aspect, resolution & zoom ---------- */
 const ASPECTS={'16:9':[1280,720],'1:1':[1080,1080],'9:16':[1080,1920]};
+let RES = 2;   // render scale factor — 2 = 2560px wide, crisp everywhere
 const ZSTEPS=[.25,.35,.5,.7,1,1.4,2,3];
 let zoomIdx=4;
 function applyZoom(){
@@ -1234,13 +1246,22 @@ function applyZoom(){
 function setAspect(a){
   S.aspect=a;
   const [w,h]=ASPECTS[a];
-  [cv,scene,base,tmp1,tmp2].forEach(c=>{ c.width=w; c.height=h; });
+  const W=w*RES, H=h*RES;
+  [cv,scene,base,tmp1,tmp2].forEach(c=>{ c.width=W; c.height=H; });
   noisePat=sctx.createPattern(noiseC,'repeat');
-  $('dims').textContent=`${w} × ${h}`;
+  $('dims').textContent=`${W} × ${H}`;
   document.querySelectorAll('.aspbtn').forEach(x=>x.classList.toggle('active',x.dataset.a===a));
   applyZoom(); render();
 }
 document.querySelectorAll('.aspbtn').forEach(b=>b.addEventListener('click',()=>setAspect(b.dataset.a)));
+document.querySelectorAll('.resbtn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    RES=+b.dataset.r;
+    document.querySelectorAll('.resbtn').forEach(x=>x.classList.toggle('active',x.dataset.r===String(RES)));
+    setAspect(S.aspect);
+    toast(`Rendering at ${cv.width} × ${cv.height}`);
+  });
+});
  $('zoomIn').addEventListener('click',()=>{ zoomIdx=Math.min(ZSTEPS.length-1,zoomIdx+1); applyZoom(); });
  $('zoomOut').addEventListener('click',()=>{ zoomIdx=Math.max(0,zoomIdx-1); applyZoom(); });
  $('zoomFit').addEventListener('click',()=>{ zoomIdx=4; applyZoom(); });
@@ -1255,18 +1276,35 @@ cmp.addEventListener('pointerdown',e=>{ e.preventDefault(); setCmp(true); });
 ['pointerup','pointerleave','pointercancel'].forEach(ev=>cmp.addEventListener(ev,()=>setCmp(false)));
 
 /* ---------- export ---------- */
- $('dl').addEventListener('click',()=>{
-  scene.toBlob(blob=>{
-    const a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);
-    a.download=(($('fname').value.trim()||'thumbnail').replace(/[^\w\- ]+/g,'')||'thumbnail')+'.png';
-    a.click(); URL.revokeObjectURL(a.href);
-  },'image/png');
-  toast(`PNG saved · ${scene.width}×${scene.height}`);
-});
- $('copyB').addEventListener('click',async()=>{
+function downloadBlob(blob, filename){
   try{
-    const blob=await new Promise(r=>scene.toBlob(r,'image/png'));
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 4000);
+    return true;
+  }catch(e){ return false; }
+}
+ $('dl').addEventListener('click', ()=>{
+  const name = (($('fname').value.trim()||'thumbnail').replace(/[^\w\- ]+/g,'').trim()||'thumbnail')+'.png';
+  const done = ()=>toast(`Exported “${name}” · ${scene.width}×${scene.height}`);
+  scene.toBlob(blob=>{
+    if (blob && downloadBlob(blob, name)){ done(); return; }
+    try{
+      const a=document.createElement('a');
+      a.href=scene.toDataURL('image/png'); a.download=name;
+      document.body.appendChild(a); a.click(); a.remove();
+      done();
+    }catch{ toast('Export failed — try the copy button'); }
+  },'image/png');
+});
+ $('copyB').addEventListener('click', async ()=>{
+  try{
+    const blob = await new Promise(r=>scene.toBlob(r,'image/png'));
     await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
     toast('Copied to clipboard');
   }catch{ toast('Clipboard copy not supported here'); }
@@ -1275,7 +1313,13 @@ cmp.addEventListener('pointerdown',e=>{ e.preventDefault(); setCmp(true); });
 /* ---------- reset ---------- */
  $('reset').addEventListener('click',()=>{
   S.img=JSON.parse(JSON.stringify(DEFAULT_IMG_S));
-  layers=defaultLayers(); sel=layers[0];
+  layers=[{
+    id:nid(), type:'text', text:'ADMIN ABUSE 🤫', x:.5, y:.5, size:130, font:'Anton',
+    color:'#ffffff', rot:0, alpha:1, ls:4, caps:false,
+    out:{on:true,w:9,color:'#000000'}, sh:{on:true,blur:18,oy:6,op:.65,color:'#000000'},
+    plate:{on:false,color:'#000000',op:.45}, rgb:0, hide:false
+  }];
+  sel=layers[0];
   hist=[]; hi=-1; pushHistory();
   syncImagePanel(); syncLayerPanel(); syncLayersPanel(); render();
   toast('Reset to defaults');
@@ -1292,11 +1336,10 @@ function toast(msg){
 
 /* ---------- init ---------- */
 setTool('select');
-syncImagePanel();
 setAspect('16:9');
-sel=layers[0]; syncLayerPanel(); syncLayersPanel();
+syncImagePanel(); syncLayerPanel(); syncLayersPanel();
 document.fonts.ready.then(render);
-setTimeout(applyZoom,50);
+setTimeout(applyZoom, 60);
 </script>
 </body>
 </html>
